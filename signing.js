@@ -33,7 +33,7 @@ app.get('/sign_s3', function(req, res){
   //   ACL: 'public-read'
   // };
 
-  var fileName = req.query.file_name
+  var fileName = 'danny/'+req.query.file_name
   var expiration = new Date(new Date().getTime() + 1000 * 60 * 5).toISOString();
 
    var policy =
