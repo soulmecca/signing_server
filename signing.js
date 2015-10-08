@@ -30,7 +30,7 @@ app.get('/sign_s3', function(req, res){
     Key: req.query.file_name,
     Expires: 300,
     ContentType: 'image/jpeg',
-    ACL: 'public-read'
+    ACL: 'public-read-write'
   };
 
   var fileName = 'danny/'+req.query.file_name
