@@ -29,7 +29,7 @@ app.get('/sign_s3', function(req, res){
     Bucket: parsed.S3_BUCKET,
     Key: req.query.file_name,
     Expires: 300,
-    // ContentType: 'image/jpeg',
+    ContentType: 'image/jpeg',
     ACL: 'public-read-write'
   };
 
