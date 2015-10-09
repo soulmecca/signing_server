@@ -59,10 +59,20 @@ app.get('/sign_s3', function(req, res){
   // res.write(JSON.stringify(return_data));
   // res.end();
 
+  //get signed url for deleteObject
+  s3.deleteObject(params, function(err, data){
+    if(err){
+      console.log(err)
+    }else{
+      res.write(JSON.stringify(data));
+      res.end();
+    }
+  })
 
-  var url = s3.getSignedUrl('getObject', s3_params)
-  res.write(JSON.stringify(url));
-  res.end();
+  //get signed url for getObject
+  // var url = s3.getSignedUrl('getObject', s3_params)
+  // res.write(JSON.stringify(url));
+  // res.end();
 
 //   s3.getSignedUrl('putObject', s3_params, function(err, data){
 //       if(err){
