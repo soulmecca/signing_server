@@ -60,7 +60,7 @@ app.get('/sign_s3', function(req, res){
   // res.end();
 
   //get signed url for deleteObject
-  s3.deleteObject(params, function(err, data){
+  s3.deleteObject(s3_params, function(err, data){
     if(err){
       console.log(err)
     }else{
