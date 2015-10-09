@@ -27,8 +27,8 @@ app.get('/sign_s3', function(req, res){
   var s3 = new aws.S3();
   var s3_params = {
     Bucket: parsed.S3_BUCKET,
-    Key: req.query.file_name,
-    Expires: 300
+    Key: req.query.file_name
+    // Expires: 300
     // ContentType: 'image/jpeg',
     // ACL: 'public-read-write'
   };
