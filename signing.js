@@ -63,7 +63,7 @@ app.get('/sign_s3/put', function(req, res){
     return_data["policy"] = policyBase64;
     return_data["signature"] = signature;
     return_data["fileName"] = fileName;
-    url: 'https://' +parsed.S3_BUCKET+'.s3.amazonaws.com/'+req.query.file_name;
+    return_data["url"] = 'https://' +parsed.S3_BUCKET+'.s3.amazonaws.com/'+req.query.file_name;
 
   res.write(JSON.stringify(return_data));
   res.end();
