@@ -31,15 +31,15 @@ app.get('/sign_s3/put', function(req, res){
   var return_data = {};
 
   //getting signed getObject url
-  var s3_params_url = {
-    Bucket: parsed.S3_BUCKET,
-    Key: req.query.file_name
-    // ACL: 'public-read-write'
-  };
-
-  // get signed url for getObject
-  var url = s3.getSignedUrl('getObject', s3_params_url)
-  return_data["url"] = url;
+  // var s3_params_url = {
+  //   Bucket: parsed.S3_BUCKET,
+  //   Key: req.query.file_name
+  //   // ACL: 'public-read-write'
+  // };
+  //
+  // // get signed url for getObject
+  // var url = s3.getSignedUrl('getObject', s3_params_url)
+  // return_data["url"] = url;
 
   //preperation for uploading an image
   var fileName = req.query.file_name
@@ -50,7 +50,7 @@ app.get('/sign_s3/put', function(req, res){
      "conditions": [
        {"bucket": parsed.S3_BUCKET},
        {"key": fileName},
-       {"acl": 'private'},
+       {"acl": 'public-read'},
        ["starts-with", "$Content-Type", ""]
       //  ["content-length-range", 0, 524288000]
   ]};
@@ -63,7 +63,7 @@ app.get('/sign_s3/put', function(req, res){
     return_data["policy"] = policyBase64;
     return_data["signature"] = signature;
     return_data["fileName"] = fileName;
-    // url: 'https://' +parsed.S3_BUCKET+'.s3.amazonaws.com/'+req.query.file_name
+    url: 'https://' +parsed.S3_BUCKET+'.s3.amazonaws.com/'+req.query.file_name;
 
   res.write(JSON.stringify(return_data));
   res.end();
