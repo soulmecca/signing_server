@@ -28,24 +28,7 @@ var s3 = new aws.S3();
 
 app.get('/sign_s3/put', function(req, res){
 
-  var s3_params = {
-    Bucket: parsed.S3_BUCKET,
-    Key: req.query.file_name,
-    Expires: 300,
-    ContentType: 'image/jpeg',
-    ACL: 'private'
-  };
-
   var return_data = {};
-
-
-  s3.getSignedUrl('putObject', s3_params, function(err, data){
-      if(err){
-        console.log(err);
-      }else{
-        return_data["signed_request"] = data
-      }
-  });
 
   //getting signed getObject url
   var s3_params_url = {
@@ -56,7 +39,31 @@ app.get('/sign_s3/put', function(req, res){
 
   // get signed url for getObject
   var url = s3.getSignedUrl('getObject', s3_params_url)
-  return_data["url"] = url
+  return_data["url"] = url;
+
+  //preperation for uploading an image
+  var fileName = req.query.file_name
+  var expiration = new Date(new Date().getTime() + 1000 * 60 * 5).toISOString();
+
+   var policy =
+   { "expiration": expiration,
+     "conditions": [
+       {"bucket": parsed.S3_BUCKET},
+       {"key": fileName},
+       {"acl": 'private'},
+       ["starts-with", "$Content-Type", ""]
+      //  ["content-length-range", 0, 524288000]
+  ]};
+
+  policyBase64 = new Buffer(JSON.stringify(policy), 'utf8').toString('base64');
+  signature = crypto.createHmac('sha1', parsed.AWS_SECRET_KEY).update(policyBase64).digest('base64');
+
+    return_data["bucket"] = parsed.S3_BUCKET;
+    return_data["awsKey"] = parsed.AWS_ACCESS_KEY;
+    return_data["policy"] = policyBase64;
+    return_data["signature"] = signature;
+    return_data["fileName"] = fileName;
+    // url: 'https://' +parsed.S3_BUCKET+'.s3.amazonaws.com/'+req.query.file_name
 
   res.write(JSON.stringify(return_data));
   res.end();
@@ -109,30 +116,20 @@ app.listen(3000, function(){
 
 
 
-
-
-// var fileName = 'danny/'+req.query.file_name
-// var expiration = new Date(new Date().getTime() + 1000 * 60 * 5).toISOString();
-//
-//  var policy =
-//  { "expiration": expiration,
-//    "conditions": [
-//      {"bucket": parsed.S3_BUCKET},
-//      {"key": fileName},
-//      {"acl": 'public-read-write'},
-//      ["starts-with", "$Content-Type", ""]
-//     //  ["content-length-range", 0, 524288000]
-// ]};
-//
-// policyBase64 = new Buffer(JSON.stringify(policy), 'utf8').toString('base64');
-// signature = crypto.createHmac('sha1', parsed.AWS_SECRET_KEY).update(policyBase64).digest('base64');
-// var return_data = {
-//   bucket: parsed.S3_BUCKET,
-//   awsKey: parsed.AWS_ACCESS_KEY,
-//   policy: policyBase64,
-//   signature: signature,
-//   url: 'https://' +parsed.S3_BUCKET+'.s3.amazonaws.com/'+req.query.file_name
+// var s3_params = {
+//   Bucket: parsed.S3_BUCKET,
+//   Key: req.query.file_name,
+//   Expires: 300,
+//   ContentType: 'image/jpeg',
+//   ACL: 'private'
 // };
-//
-// res.write(JSON.stringify(return_data));
-// res.end();
+
+
+
+  // s3.getSignedUrl('putObject', s3_params, function(err, data){
+  //     if(err){
+  //       console.log(err);
+  //     }else{
+  //       return_data["signed_request"] = data
+  //     }
+  // });
